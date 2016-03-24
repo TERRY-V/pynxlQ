@@ -1,0 +1,1 @@
+/usr/bin/cc      CMakeFiles/hello.dir/main.c.o  -o ../bin/hello -rdynamic ../lib/libhello.so -Wl,-rpath,/root/TERRY-V/QC++/cmake/build/lib 

@@ -1,0 +1,130 @@
+Latency Statistics:
+
+Samples num:          99
+Total consumed:       751145ms
+Average latency:      7587ms
+
+Sorted result:
+EventID 1: 14383ms
+EventID 2: 886ms
+EventID 3: 12777ms
+EventID 4: 1915ms
+EventID 5: 7793ms
+EventID 6: 8335ms
+EventID 7: 5386ms
+EventID 8: 492ms
+EventID 9: 11649ms
+EventID 10: 6421ms
+EventID 11: 12362ms
+EventID 12: 10027ms
+EventID 13: 8690ms
+EventID 14: 5059ms
+EventID 15: 7763ms
+EventID 16: 8926ms
+EventID 17: 540ms
+EventID 18: 3426ms
+EventID 19: 9172ms
+EventID 20: 736ms
+EventID 21: 10211ms
+EventID 22: 368ms
+EventID 23: 12567ms
+EventID 24: 6429ms
+EventID 25: 782ms
+EventID 26: 6530ms
+EventID 27: 7862ms
+EventID 28: 10123ms
+EventID 29: 9067ms
+EventID 30: 13135ms
+EventID 31: 3929ms
+EventID 32: 14802ms
+EventID 33: 14022ms
+EventID 34: 8058ms
+EventID 35: 8069ms
+EventID 36: 13167ms
+EventID 37: 1393ms
+EventID 38: 13456ms
+EventID 39: 5011ms
+EventID 40: 13042ms
+EventID 41: 11229ms
+EventID 42: 2373ms
+EventID 43: 14421ms
+EventID 44: 4919ms
+EventID 45: 13784ms
+EventID 46: 13537ms
+EventID 47: 5198ms
+EventID 48: 14324ms
+EventID 49: 8315ms
+EventID 50: 14370ms
+EventID 51: 6413ms
+EventID 52: 3526ms
+EventID 53: 6091ms
+EventID 54: 3980ms
+EventID 55: 9956ms
+EventID 56: 6873ms
+EventID 57: 1862ms
+EventID 58: 9170ms
+EventID 59: 1996ms
+EventID 60: 2281ms
+EventID 61: 7305ms
+EventID 62: 5925ms
+EventID 63: 2084ms
+EventID 64: 6327ms
+EventID 65: 5336ms
+EventID 66: 1505ms
+EventID 67: 10846ms
+EventID 68: 6729ms
+EventID 69: 6313ms
+EventID 70: 857ms
+EventID 71: 11124ms
+EventID 72: 8895ms
+EventID 73: 9582ms
+EventID 74: 10545ms
+EventID 75: 13814ms
+EventID 76: 8367ms
+EventID 77: 434ms
+EventID 78: 10364ms
+EventID 79: 14043ms
+EventID 80: 8750ms
+EventID 81: 1087ms
+EventID 82: 11808ms
+EventID 83: 12276ms
+EventID 84: 7178ms
+EventID 85: 788ms
+EventID 86: 13584ms
+EventID 87: 5403ms
+EventID 88: 2651ms
+EventID 89: 7754ms
+EventID 90: 7399ms
+EventID 91: 4932ms
+EventID 92: 60ms
+EventID 93: 4676ms
+EventID 94: 13368ms
+EventID 95: 12739ms
+EventID 96: 10012ms
+EventID 97: 6226ms
+EventID 98: 8586ms
+EventID 99: 8094ms
+
+Peak event id:        99
+Peak event latency:   8094ms
+Valley event id:      1
+Valley event latency: 14383ms
+
+Latency stat(ms):
+00000 - 00999(ms): 10
+01000 - 01999(ms): 6
+02000 - 02999(ms): 4
+03000 - 03999(ms): 4
+04000 - 04999(ms): 3
+05000 - 05999(ms): 7
+06000 - 06999(ms): 10
+07000 - 07999(ms): 7
+08000 - 08999(ms): 11
+09000 - 09999(ms): 5
+10000 - 10999(ms): 7
+11000 - 11999(ms): 4
+12000 - 12999(ms): 5
+13000 - 13999(ms): 9
+14000 - 14999(ms): 7
+15000 - 15999(ms): 0
+

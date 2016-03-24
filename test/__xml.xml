@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<datainfo>
+	<projects meaning="工程项目">
+		<project meaning="工程项目">
+			<name meaning="工程项目名称">niuxiaolin</name>
+			<spfn meaning="工程实体专名"><![CDATA[sss]]></spfn>
+			<cmmn meaning="工程实体名称"/>
+			<period>一期</period>
+			<scale><![CDATA[67788]]></scale>
+			<location meaning="工程地址">sssssssssssssssssssssssssss</location>
+			<biddings meaning="公告招标信息">
+				<bidcode meaning="招标编号">2738383833333</bidcode>
+				<appstart meaning="递标递资开始时间">20140826</appstart>
+				<append meaning="递标递资截止时间">20140921</append>
+			</biddings>	
+		</project>
+	</projects>
+</datainfo>

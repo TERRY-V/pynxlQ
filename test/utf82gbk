@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# Written by TERRY-V
+
+func() {
+	for file in *.h
+	do
+		echo $file
+		iconv -f utf8 -t gbk $file -o $file.bak
+		rm $file
+		mv $file.bak $file
+	done
+}
+
+echo "utf8 to gbk......"
+func
+echo "over!"
+
+exit 0

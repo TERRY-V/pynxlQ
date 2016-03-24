@@ -1,0 +1,72 @@
+(1) autoscan
+生成autoscan.log configure.scan
+
+(2) mv configure.scan configure.in
+修改前:
+# -*- Autoconf -*-
+
+# Process this file with autoconf to produce a configure script.
+
+AC_PREREQ(2.61)
+
+AC_INIT(FULL-PACKAGE-NAME, VERSION, BUG-REPORT-ADDRESS)
+
+AC_CONFIG_SRCDIR([main.c])
+
+AC_CONFIG_HEADER([config.h])
+
+# Checks for programs.
+
+AC_PROG_CC
+
+# Checks for libraries.
+
+# Checks for header files.
+
+# Checks for typedefs, structures, and compiler characteristics.
+
+# Checks for library functions.
+
+AC_OUTPUT
+
+----------------------------------------------------
+修改后:
+# -*- Autoconf -*-
+
+# Process this file with autoconf to produce a configure script.
+
+AC_PREREQ(2.61)
+
+AC_INIT(main, 1.0, pgpxc@163.com)
+
+AC_CONFIG_SRCDIR([main.c])
+
+AC_CONFIG_HEADER([config.h])
+
+AM_INIT_AUTOMAKE(main,1.0)
+
+# Checks for programs.
+
+AC_PROG_CC
+
+# Checks for libraries.
+
+# Checks for header files.
+
+# Checks for typedefs, structures, and compiler characteristics.
+
+# Checks for library functions.
+
+AC_OUTPUT([Makefile])
+
+(3) aclocal
+
+(4) autoheader
+
+(5) automake --add-missing
+
+(6) configure
+
+(7) make
+
+(8) over!
