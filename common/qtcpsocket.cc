@@ -32,6 +32,16 @@ void QTcpClient::setHost(const char* server_ip, uint16_t server_port)
 	this->server_port_=server_port;
 }
 
+void QTcpClient::setHost(const char* host)
+{
+	char* p=::strchr(const_cast<char*>(host), ':');
+	Q_ASSERT(p!=NULL, "QTcpClient: invalid host (%s)!", host);
+
+	*p='\0';
+	strcpy(this->server_ip_, host);
+	this->server_port_=::atoi(p+1);
+}
+
 void QTcpClient::setTimeout(int32_t timeout)
 {
 	this->server_timeout_=timeout;
@@ -62,14 +72,22 @@ void QTcpClient::setOperateType(uint16_t operate_type)
 	this->operate_type_=operate_type;
 }
 
-int32_t QTcpClient::sendRequest(const char* ptr_data, int32_t data_len)
+int32_t QTcpClient::sendRequest(const char* ptr_data, int32_t data_len, const void* ptr_extend, int32_t extend_len)
 {
 	if(ptr_data==NULL||data_len<0)
 		return TCP_ERR;
 
-	int32_t packet_len=sizeof(requestHeader)+sizeof(uint16_t)+sizeof(uint32_t)+data_len;
-	request_buffer_size_=packet_len;
+	char* ptr_temp=NULL;
+	int32_t packet_len=0;
 
+	packet_len=sizeof(requestHeader)+sizeof(uint16_t);
+	if(ptr_extend && extend_len) {
+		packet_len+=sizeof(int32_t)*3+data_len+extend_len;
+	} else {
+		packet_len+=sizeof(int32_t)+data_len;
+	}
+
+	request_buffer_size_=packet_len;
 	request_buffer_=q_new_array<char>(request_buffer_size_);
 	if(request_buffer_==NULL)
 		return TCP_ERR_HEAP_ALLOC;
@@ -82,9 +100,22 @@ int32_t QTcpClient::sendRequest(const char* ptr_data, int32_t data_len)
 	request_header->source_type=source_type_;
 	request_header->command_type=command_type_;
 
-	*(uint16_t *)(request_buffer_+sizeof(requestHeader))=operate_type_;
-	*(uint32_t *)(request_buffer_+sizeof(requestHeader)+sizeof(uint16_t))=data_len;
-	memcpy(request_buffer_+sizeof(requestHeader)+sizeof(uint16_t)+sizeof(int32_t), ptr_data, data_len);
+	ptr_temp=request_buffer_+sizeof(requestHeader);
+	*(uint16_t *)ptr_temp=operate_type_;
+
+	if(ptr_extend && extend_len)
+	{
+		*(int32_t *)(ptr_temp+sizeof(uint16_t))=data_len+extend_len+sizeof(int32_t)*2;
+
+		*(int32_t *)(ptr_temp+sizeof(uint16_t)+sizeof(int32_t))=data_len;
+		memcpy(ptr_temp+sizeof(uint16_t)+sizeof(int32_t)*2, ptr_data, data_len);
+
+		*(int32_t *)(ptr_temp+sizeof(uint16_t)+sizeof(int32_t)*2+data_len)=extend_len;
+		memcpy(ptr_temp+sizeof(uint16_t)+sizeof(int32_t)*3+data_len, ptr_extend, extend_len);
+	} else {
+		*(uint32_t *)(ptr_temp+sizeof(uint16_t))=data_len;
+		memcpy(ptr_temp+sizeof(uint16_t)+sizeof(int32_t), ptr_data, data_len);
+	}
 
 	if(q_init_socket()<0)
 		return TCP_ERR_SOCKET_INIT;

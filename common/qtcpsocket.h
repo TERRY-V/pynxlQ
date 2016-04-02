@@ -197,13 +197,16 @@ struct clientInfo {
 class QTcpClient : public noncopyable {
 	public:
 		// @函数名: 构造函数
-		QTcpClient();
+		explicit QTcpClient();
 
 		// @函数名: 析构函数
 		virtual ~QTcpClient();
 
 		// @函数名: 设置主机名
 		void setHost(const char* server_ip, uint16_t server_port);
+
+		// @函数名: 设置主机名
+		void setHost(const char* host);
 
 		// @函数名: 设置超时时间
 		void setTimeout(int32_t timeout=TCP_DEFAULT_SERVER_TIMEOUT);
@@ -224,7 +227,7 @@ class QTcpClient : public noncopyable {
 		void setOperateType(uint16_t operate_type);
 
 		// @函数名: 发送请求信息
-		int32_t sendRequest(const char* ptr_data, int32_t data_len);
+		int32_t sendRequest(const char* ptr_data, int32_t data_len, const void* ptr_extend=NULL, int32_t extend_len=0);
 
 		// @函数名: 获取响应信息
 		int32_t getReply(networkReply* reply);
@@ -240,6 +243,7 @@ class QTcpClient : public noncopyable {
 		uint16_t	protocol_type_;
 		uint16_t	source_type_;
 		uint16_t	command_type_;
+		/* io buffer */
 		uint16_t	operate_type_;
 		char*           request_buffer_;
 		int32_t         request_buffer_size_;
