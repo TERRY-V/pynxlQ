@@ -31,6 +31,7 @@ Q_BEGIN_NAMESPACE
 // MongoDB客户端
 // https://github.com/mongodb/mongo-cxx-driver/wiki/Tutorial
 // yum install boost boost-devel
+// apt-get install libboost-all-dev
 // 编译时需要加参数-I ~/mongo-client-install/include/ ~/mongo-client-install/lib/libmongoclient.a -lboost_system -lboost_thread -lboost_regex
 class QMongoClient {
 	public:
