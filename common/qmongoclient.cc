@@ -38,32 +38,147 @@ int32_t QMongoClient::selectAll()
 		while(cursor->more())
 			Q_INFO("Data: (%s)!", cursor->next().toString().c_str());
 	} catch(const mongo::DBException& e) {
-		Q_INFO("QMongoClient: database faild for (%s)...", e.toString());
+		Q_INFO("QMongoClient: database faild for (%s)...", e.toString().c_str());
 		return MONGO_ERR;
 	}
 	return MONGO_OK;
 }
 
-int32_t QMongoClient::insert(uint64_t key, const char* value)
+int32_t QMongoClient::insert(const char* id, const char* idValue, const char* columnName, const char* columnValue)
 {
-	if(value == NULL)
+	if(id == NULL || idValue == NULL || columnName == NULL || columnValue == NULL)
 		return MONGO_ERR;
 
 	try {
 		mongo::BSONObj p = BSON(GENOID \
-				<< "key" \
-				<< q_to_string(key) \
-				<< "value" \
-				<< value \
+				<< id \
+				<< idValue \
+				<< columnName \
+				<< columnValue \
 				<< "createdAt" \
 				<< mongo::Date_t(dt(QDateTime::now().to_string().c_str())));
 
 		conn_->insert(collection_, p);
 	} catch(const mongo::DBException& e) {
-		Q_INFO("QMongoClient: database faild for (%s)...", e.toString());
+		Q_INFO("QMongoClient: database faild for (%s)...", e.toString().c_str());
 		return MONGO_ERR;
 	}
 	return MONGO_OK;
+}
+
+int32_t QMongoClient::insert(const char* id, const char* idValue, const char* columnName1, const char* columnValue1, const char* columnName2, const char* columnValue2)
+{
+	if(id == NULL || idValue == NULL || columnName1 == NULL || columnValue1 == NULL || columnName2 == NULL || columnValue2 == NULL)
+		return MONGO_ERR;
+
+	try {
+		mongo::BSONObj p = BSON(GENOID \
+				<< id \
+				<< idValue \
+				<< columnName1 \
+				<< columnValue1 \
+				<< columnName2 \
+				<< columnValue2 \
+				<< "createdAt" \
+				<< mongo::Date_t(dt(QDateTime::now().to_string().c_str())));
+
+		conn_->insert(collection_, p);
+	} catch(const mongo::DBException& e) {
+		Q_INFO("QMongoClient: database faild for (%s)...", e.toString().c_str());
+		return MONGO_ERR;
+	}
+	return MONGO_OK;
+}
+
+bool QMongoClient::select(const char* id, const char* idValue, const char* columnName, std::string& columnValue)
+{
+	if(id == NULL || idValue == NULL || columnName == NULL)
+		return false;
+
+	try {
+		mongo::BSONObj res = conn_->findOne(collection_, BSON(id << idValue));
+		if(!res.isEmpty()) {
+			columnValue = res.getStringField(columnName);
+			return true;
+		}
+	} catch(const mongo::DBException& e) {
+		Q_INFO("QMongoClient: database faild for (%s)...", e.toString().c_str());
+		return false;
+	}
+
+	return false;
+}
+
+bool QMongoClient::select(const char* id, const char* idValue, const char* columnName1, std::string& columnValue1, const char* columnName2, std::string& columnValue2)
+{
+	if(id == NULL || idValue == NULL || columnName1 == NULL || columnName2 == NULL)
+		return false;
+
+	try {
+		mongo::BSONObj res = conn_->findOne(collection_, BSON(id << idValue));
+		if(!res.isEmpty()) {
+			columnValue1 = res.getStringField(columnName1);
+			columnValue2 = res.getStringField(columnName2);
+			return true;
+		}
+	} catch(const mongo::DBException& e) {
+		Q_INFO("QMongoClient: database faild for (%s)...", e.toString().c_str());
+		return false;
+	}
+
+	return false;
+}
+
+int32_t QMongoClient::update(const char* id, const char* idValue, const char* columnName, const char* columnValue)
+{
+	if(id == NULL || idValue == NULL || columnName == NULL || columnValue == NULL)
+		return MONGO_ERR;
+
+	try {
+		mongo::BSONObj p = BSON(id \
+				<< idValue);
+
+		mongo::BSONObj after = BSON(id \
+				<< idValue \
+				<< columnName \
+				<< columnValue \
+				<< "createdAt" \
+				<< mongo::Date_t(dt(QDateTime::now().to_string().c_str())));
+
+		conn_->update(collection_, p, after, mongo::UpdateOption_Upsert);
+	} catch(const mongo::DBException& e) {
+		Q_INFO("QMongoClient: database faild for (%s)...", e.toString().c_str());
+		return MONGO_ERR;
+	}
+	return MONGO_OK;
+}
+
+int32_t QMongoClient::remove(const char* id, const char* idValue)
+{
+	try {
+		conn_->remove(collection_, BSON(id << idValue));
+	} catch(const mongo::DBException& e) {
+		Q_INFO("QMongoClient: database faild for (%s)...", e.toString().c_str());
+		return MONGO_ERR;
+	}
+	return MONGO_OK;
+}
+
+bool QMongoClient::exists(const char* id, const char* idValue)
+{
+	try {
+		std::auto_ptr<DBClientCursor> cursor =
+			conn_->query(collection_, MONGO_QUERY(id << idValue));
+		while(cursor->more()) {
+			mongo::BSONObj p = cursor->next();
+			return true;
+		}
+	} catch(const mongo::DBException& e) {
+		Q_INFO("QMongoClient: database faild for (%s)...", e.toString().c_str());
+		return false;
+	}
+
+	return false;
 }
 
 unsigned long long QMongoClient::count()
@@ -76,108 +191,18 @@ int32_t QMongoClient::dropCollection()
 	try {
 		conn_->dropCollection(collection_);
 	} catch(const mongo::DBException& e) {
-		Q_INFO("QMongoClient: database faild for (%s)...", e.toString());
+		Q_INFO("QMongoClient: database faild for (%s)...", e.toString().c_str());
 		return MONGO_ERR;
 	}
 	return MONGO_OK;
 }
 
-bool QMongoClient::exists(const char* imgid)
+int32_t QMongoClient::createIndex(const char* columnName)
 {
 	try {
-		std::auto_ptr<DBClientCursor> cursor =
-			conn_->query(collection_, MONGO_QUERY("imgId" << imgid));
-		while(cursor->more()) {
-			mongo::BSONObj p = cursor->next();
-			return true;
-		}
+		conn_->createIndex(collection_, BSON(columnName << 1));
 	} catch(const mongo::DBException& e) {
-		Q_INFO("QMongoClient: database faild for (%s)...", e.toString());
-		return false;
-	}
-
-	return false;
-}
-
-bool QMongoClient::select(const char* imgid, std::string& imgInfo)
-{
-	try {
-		mongo::BSONObj res = conn_->findOne(collection_, BSON("imgId" << imgid));
-		if(!res.isEmpty()) {
-			imgInfo = res.getStringField("imgInfo");
-			return true;
-		}
-	} catch(const mongo::DBException& e) {
-		Q_INFO("QMongoClient: database faild for (%s)...", e.toString());
-		return false;
-	}
-
-	return false;
-}
-
-int32_t QMongoClient::insert(const char* imgid, const char* imgInfo)
-{
-	if(imgInfo == NULL)
-		return MONGO_ERR;
-
-	try {
-		mongo::BSONObj p = BSON(GENOID \
-				<< "imgId" \
-				<< imgid \
-				<< "imgInfo" \
-				<< imgInfo \
-				<< "createdAt" \
-				<< mongo::Date_t(dt(QDateTime::now().to_string().c_str())));
-
-		conn_->insert(collection_, p);
-	} catch(const mongo::DBException& e) {
-		Q_INFO("QMongoClient: database faild for (%s)...", e.toString());
-		return MONGO_ERR;
-	}
-	return MONGO_OK;
-}
-
-int32_t QMongoClient::update(const char* imgid, const char* imgInfo)
-{
-	if(imgInfo == NULL)
-		return MONGO_ERR;
-
-	try {
-		mongo::BSONObj p = BSON("imgId" \
-				<< imgid);
-
-		mongo::BSONObj after = BSON("imgId" \
-				<< imgid \
-				<< "imgInfo" \
-				<< imgInfo \
-				<< "createdAt" \
-				<< mongo::Date_t(dt(QDateTime::now().to_string().c_str())));
-
-		conn_->update(collection_, p, after, mongo::UpdateOption_Upsert);
-	} catch(const mongo::DBException& e) {
-		Q_INFO("QMongoClient: database faild for (%s)...", e.toString());
-		return MONGO_ERR;
-	}
-	return MONGO_OK;
-}
-
-int32_t QMongoClient::remove(const char* imgid)
-{
-	try {
-		conn_->remove(collection_, BSON("imgid" << imgid));
-	} catch(const mongo::DBException& e) {
-		Q_INFO("QMongoClient: database faild for (%s)...", e.toString());
-		return MONGO_ERR;
-	}
-	return MONGO_OK;
-}
-
-int32_t QMongoClient::createIndex()
-{
-	try {
-		conn_->createIndex(collection_, BSON("imgid" << 1));
-	} catch(const mongo::DBException& e) {
-		Q_INFO("QMongoClient: database faild for (%s)...", e.toString());
+		Q_INFO("QMongoClient: database faild for (%s)...", e.toString().c_str());
 		return MONGO_ERR;
 	}
 	return MONGO_OK;

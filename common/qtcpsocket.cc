@@ -172,6 +172,7 @@ QTcpServer::QTcpServer()
 	this->arch_bits_=(sizeof(long)==8)?64:32;
 	this->start_flag_=false;
 	this->exit_flag_=false;
+	this->config_=NULL;
 	this->server_name_=NULL;
 	this->server_port_=TCP_DEFAULT_SERVER_PORT;
 	this->server_timeout_=TCP_DEFAULT_SERVER_TIMEOUT;
@@ -197,7 +198,6 @@ QTcpServer::QTcpServer()
 	this->send_ip_=NULL;
 	this->send_port_=0;
 	this->data_path_=NULL;
-	this->img_path_=NULL;
 	this->read_path_=NULL;
 	this->write_path_=NULL;
 	this->monitor_=NULL;
@@ -220,12 +220,8 @@ QTcpServer::~QTcpServer()
 	exit_flag_=true;
 
 	q_free(pidfile_);
-	q_free(log_path_);
-	q_free(log_prefix_);
 
 	q_close_socket(listen_sock_);
-
-	free_thread_info();
 
 	clientInfo* client_info=NULL;
 	while(chunk_queue_->pop_non_blocking(client_info)==0)
@@ -238,10 +234,10 @@ QTcpServer::~QTcpServer()
 	q_delete< QQueue<clientInfo*> >(client_queue_);
 	q_delete< QTrigger >(client_trigger_);
 
-	q_free(send_ip_);
+	free_server_info();
 
+	q_free(send_ip_);
 	q_free(data_path_);
-	q_free(img_path_);
 	q_free(read_path_);
 	q_free(write_path_);
 
@@ -251,6 +247,8 @@ QTcpServer::~QTcpServer()
 	q_free(log_path_);
 	q_free(log_prefix_);
 	q_delete<QLogger>(logger_);
+
+	q_delete<QConfigReader>(config_);
 	q_delete<QRemoteMonitor>(monitor_);
 }
 
@@ -359,13 +357,6 @@ int32_t QTcpServer::init(const char* cfg_file)
 		return TCP_ERR;
 	}
 
-	if(!QDir::mkdir(img_path_)) {
-		logger_->log(LEVEL_ERROR, __FILE__, __LINE__, __FUNCTION__, log_screen_, \
-				"mkdir img_path_ (%s) error!", \
-				img_path_);
-		return TCP_ERR;
-	}
-
 	if(access(write_path_, 00)==0)
 	{
 		ret=q_repair_file(write_path_, (const char*)&TCP_TAILER_FILE_MARK, sizeof(TCP_TAILER_FILE_MARK));
@@ -391,6 +382,15 @@ int32_t QTcpServer::init(const char* cfg_file)
 					write_path_);
 			return TCP_ERR;
 		}
+	}
+
+	/* initialization */
+	ret=initialize();
+	if(ret<0) {
+		logger_->log(LEVEL_ERROR, __FILE__, __LINE__, __FUNCTION__, log_screen_, \
+				"initialize error, ret = (%d)!", \
+				ret);
+		return TCP_ERR;
 	}
 
 	/* network */
@@ -562,109 +562,108 @@ int32_t QTcpServer::init(const char* cfg_file)
 
 int32_t QTcpServer::load_server_config(const char* cfg_file)
 {
-	QConfigReader config;
 	int32_t ret=0;
 
-	if(config.init(cfg_file)<0)
+	config_=q_new<QConfigReader>();
+	if(config_==NULL)
 		return TCP_ERR;
 
-	ret=config.getFieldString("pidfile", pidfile_);
+	if(config_->init(cfg_file)<0)
+		return TCP_ERR;
+
+	ret=config_->getFieldString("pidfile", pidfile_);
 	if(ret<0)
 		return TCP_ERR;
 
-	ret=config.getFieldString("server-name", server_name_);
+	ret=config_->getFieldString("server-name", server_name_);
 	if(ret<0)
 		return TCP_ERR;
 
-	ret=config.getFieldUint16("server-port", server_port_);
+	ret=config_->getFieldUint16("server-port", server_port_);
 	if(ret<0)
 		return TCP_ERR;
 
-	ret=config.getFieldUint16("monitor-port", monitor_port_);
+	ret=config_->getFieldUint16("monitor-port", monitor_port_);
 	if(ret<0)
 		return TCP_ERR;
 
-	ret=config.getFieldInt32("server-timeout", server_timeout_);
+	ret=config_->getFieldInt32("server-timeout", server_timeout_);
 	if(ret<0)
 		return TCP_ERR;
 
-	ret=config.getFieldInt32("comm-thread-max", comm_thread_max_);
+	ret=config_->getFieldInt32("comm-thread-max", comm_thread_max_);
 	if(ret<0)
 		return TCP_ERR;
 
-	ret=config.getFieldInt32("comm-buffer-size", comm_buffer_size_);
+	ret=config_->getFieldInt32("comm-buffer-size", comm_buffer_size_);
 	if(ret<0)
 		return TCP_ERR;
 
-	ret=config.getFieldInt32("comm-thread-timeout", comm_thread_timeout_);
+	ret=config_->getFieldInt32("comm-thread-timeout", comm_thread_timeout_);
 	if(ret<0)
 		return TCP_ERR;
 
-	ret=config.getFieldInt32("work-thread-max", work_thread_max_);
+	ret=config_->getFieldInt32("work-thread-max", work_thread_max_);
 	if(ret<0)
 		return TCP_ERR;
 
-	ret=config.getFieldInt32("work-buffer-size", work_buffer_size_);
+	ret=config_->getFieldInt32("work-buffer-size", work_buffer_size_);
 	if(ret<0)
 		return TCP_ERR;
 
-	ret=config.getFieldInt32("work-thread-timeout", work_thread_timeout_);
+	ret=config_->getFieldInt32("work-thread-timeout", work_thread_timeout_);
 	if(ret<0)
 		return TCP_ERR;
 
-	ret=config.getFieldInt32("send-thread-max", send_thread_max_);
+	ret=config_->getFieldInt32("send-thread-max", send_thread_max_);
 	if(ret<0)
 		return TCP_ERR;
 
-	ret=config.getFieldInt32("send-buffer-size", send_buffer_size_);
+	ret=config_->getFieldInt32("send-buffer-size", send_buffer_size_);
 	if(ret<0)
 		return TCP_ERR;
 
-	ret=config.getFieldInt32("send-thread-timeout", send_thread_timeout_);
+	ret=config_->getFieldInt32("send-thread-timeout", send_thread_timeout_);
 	if(ret<0)
 		return TCP_ERR;
 
-	ret=config.getFieldInt32("queue-size", queue_size_);
+	ret=config_->getFieldInt32("queue-size", queue_size_);
 	if(ret<0)
 		return TCP_ERR;
 
-	ret=config.getFieldString("send-ip", send_ip_);
+	ret=config_->getFieldString("send-ip", send_ip_);
 	if(ret<0)
 		return TCP_ERR;
 
-	ret=config.getFieldInt32("send-port", send_port_);
+	ret=config_->getFieldInt32("send-port", send_port_);
 	if(ret<0)
 		return TCP_ERR;
 
-	ret=config.getFieldString("data-path", data_path_);
+	ret=config_->getFieldString("data-path", data_path_);
 	if(ret<0)
 		return TCP_ERR;
 
-	ret=config.getFieldString("img-path", img_path_);
+	ret=config_->getFieldString("read-path", read_path_);
 	if(ret<0)
 		return TCP_ERR;
 
-	ret=config.getFieldString("read-path", read_path_);
+	ret=config_->getFieldString("write-path", write_path_);
 	if(ret<0)
 		return TCP_ERR;
 
-	ret=config.getFieldString("write-path", write_path_);
+	ret=config_->getFieldString("log-path", log_path_);
 	if(ret<0)
 		return TCP_ERR;
 
-	ret=config.getFieldString("log-path", log_path_);
+	ret=config_->getFieldString("log-prefix", log_prefix_);
 	if(ret<0)
 		return TCP_ERR;
 
-	ret=config.getFieldString("log-prefix", log_prefix_);
+	ret=config_->getFieldYesNo("log-screen", log_screen_);
 	if(ret<0)
 		return TCP_ERR;
 
-	ret=config.getFieldYesNo("log-screen", log_screen_);
-	if(ret<0)
-		return TCP_ERR;
-
-	ret=config.getFieldInt32("log-size", log_size_);
+	ret=config_->getFieldInt32("log-size", log_size_);
 	if(ret<0)
 		return TCP_ERR;
 
@@ -692,7 +691,7 @@ int32_t QTcpServer::load_server_config(const char* cfg_file)
 	Q_INFO("send-ip              = (%s)", send_ip_);
 	Q_INFO("send-port            = (%d)", send_port_);
 
-	Q_INFO("img-path             = (%s)", img_path_);
+	Q_INFO("data-path            = (%s)", data_path_);
 	Q_INFO("read-path            = (%s)", read_path_);
 	Q_INFO("write-path           = (%s)", write_path_);
 
@@ -1207,13 +1206,13 @@ int32_t QTcpServer::backup_file(const char* ptr_file, char* ptr_buf, int32_t buf
 	return ret;
 }
 
-void QTcpServer::free_thread_info()
+void QTcpServer::free_server_info()
 {
+	release();
 	for(int32_t i=0; i<thread_max_; ++i)
 	{
 		client_trigger_->signal();
 
-		q_sleep(1);
 		while(thread_info_[i].flag!=-1)
 			q_sleep(1);
 
@@ -1224,7 +1223,6 @@ void QTcpServer::free_thread_info()
 	}
 
 	q_delete<threadInfo>(thread_info_);
-	thread_info_=NULL;
 }
 
 int32_t QTcpServer::get_thread_state(void* ptr_info)
@@ -1248,3 +1246,4 @@ int32_t QTcpServer::get_thread_state(void* ptr_info)
 }
 
 Q_END_NAMESPACE
+

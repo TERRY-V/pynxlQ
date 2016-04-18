@@ -279,6 +279,12 @@ class QTcpServer : public noncopyable {
 		// @函数名: 继承类必须实现的业务逻辑类释放函数
 		virtual int32_t server_free(const void* handle=NULL)=0;
 
+		// @函数名: 继承类必须实现的初始化函数
+		virtual int32_t initialize()=0;
+
+		// @函数名: 继承类必须实现的释放函数
+		virtual int32_t release()=0;
+
 	private:
 		// @函数名: 配置读取函数
 		int32_t load_server_config(const char* cfg_file);
@@ -298,8 +304,8 @@ class QTcpServer : public noncopyable {
 		// @函数名: 数据备份函数
 		int32_t backup_file(const char* ptr_file, char* ptr_buf, int32_t buf_size);
 
-		// @函数名: 释放线程信息
-		void free_thread_info();
+		// @函数名: 释放服务器信息
+		void free_server_info();
 
 		// @函数名: 获取线程运行状态
 		static int32_t get_thread_state(void* ptr_info);
@@ -315,6 +321,7 @@ class QTcpServer : public noncopyable {
 		bool            start_flag_;
 		bool            exit_flag_;
 		/* configuration */
+		QConfigReader*  config_;
 		char*           server_name_;
 		uint16_t        server_port_;
 		int32_t         server_timeout_;
@@ -343,7 +350,6 @@ class QTcpServer : public noncopyable {
 		char*           send_ip_;
 		int32_t         send_port_;
 		char*           data_path_;
-		char*           img_path_;
 		char*           read_path_;
 		char*           write_path_;
 		FILE*           write_fp_;

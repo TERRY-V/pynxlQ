@@ -76,6 +76,7 @@ SRCS		+= qlbscheduler.cc
 SRCS		+= qlogger.cc
 SRCS		+= qlogicalparser.cc
 SRCS		+= qmysqlclient.cc
+# SRCS		+= qmongoclient.cc
 SRCS		+= qnetworkaccessmanager.cc
 SRCS		+= qremotemonitor.cc
 SRCS		+= qservice.cc
