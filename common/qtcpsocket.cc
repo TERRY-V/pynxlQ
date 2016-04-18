@@ -475,15 +475,13 @@ int32_t QTcpServer::init(const char* cfg_file)
 			return TCP_ERR;
 		}
 
-		/********************************* START ********************************/
-		ret=server_fun_init(ptr_trd[i].for_worker);
+		ret=server_init(ptr_trd[i].for_worker);
 		if(ret<0) {
 			logger_->log(LEVEL_ERROR, __FILE__, __LINE__, __FUNCTION__, log_screen_, \
 					"server_fun_init (%d) error!", \
 					i+1);
 			return TCP_ERR;
 		}
-		/********************************* FINISH *******************************/
 
 		ret=q_create_thread(QTcpServer::work_thread, ptr_trd+i);
 		if(ret<0) {
@@ -822,8 +820,7 @@ Q_THREAD_T QTcpServer::work_thread(void* ptr_info)
 					throw TCP_ERR_SOCKET_RECV;
 				}
 
-				// fun header
-				recv_len=ptr_this->server_fun_header(client_info->request_buffer, ptr_this->header_size_);
+				recv_len=ptr_this->server_header(client_info->request_buffer, ptr_this->header_size_);
 				if(recv_len<0) {
 					ptr_this->logger_->log(LEVEL_ERROR, __FILE__, __LINE__, __FUNCTION__, ptr_this->log_screen_, \
 							"TCP socket server_fun_header error, code = (%d)!", \
@@ -846,8 +843,7 @@ Q_THREAD_T QTcpServer::work_thread(void* ptr_info)
 					throw TCP_ERR_SOCKET_RECV;
 				}
 
-				// fun process
-				send_len=ptr_this->server_fun_process(client_info->request_buffer, \
+				send_len=ptr_this->server_process(client_info->request_buffer, \
 						recv_len, \
 						client_info->reply_buffer+sizeof(baseHeader), \
 						client_info->reply_buffer_size-sizeof(baseHeader), \
@@ -1224,7 +1220,7 @@ void QTcpServer::free_thread_info()
 		q_delete_array<char>(thread_info_[i].ptr_buf);
 
 		if(thread_info_[i].for_worker!=NULL)
-			server_fun_free(thread_info_[i].for_worker);
+			server_free(thread_info_[i].for_worker);
 	}
 
 	q_delete<threadInfo>(thread_info_);

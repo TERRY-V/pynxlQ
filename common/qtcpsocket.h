@@ -267,17 +267,17 @@ class QTcpServer : public noncopyable {
 		virtual int32_t start();
 
 		// @函数名: 继承类必须实现的业务逻辑初始化函数
-		virtual int32_t server_fun_init(void*& handle)=0;
+		virtual int32_t server_init(void*& handle)=0;
 
-		// @函数名: 继承类必须实现的包头解析函数
-		virtual int32_t server_fun_header(const char* header_buffer, int32_t header_len, const void* handle=NULL)=0;
+		// @函数名: 继承类必须实现的消息头解析函数
+		virtual int32_t server_header(const char* header_buffer, int32_t header_len, const void* handle=NULL)=0;
 
-		// @函数名: 继承类必须实现的协议处理函数
-		virtual int32_t server_fun_process(const char* request_buffer, int32_t request_len, char* reply_buffer, int32_t reply_size, \
+		// @函数名: 继承类必须实现的消息体解析函数
+		virtual int32_t server_process(const char* request_buffer, int32_t request_len, char* reply_buffer, int32_t reply_size, \
 				const void* handle=NULL)=0;
 
 		// @函数名: 继承类必须实现的业务逻辑类释放函数
-		virtual int32_t server_fun_free(const void* handle=NULL)=0;
+		virtual int32_t server_free(const void* handle=NULL)=0;
 
 	private:
 		// @函数名: 配置读取函数
