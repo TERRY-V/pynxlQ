@@ -155,6 +155,7 @@ void testHex()
 
 int main(int argc, char** argv)
 {
+	Q_INFO("Hello, world!");
 	//testWatchdog();
 	//testByteSwap();
 	//testRandom();
