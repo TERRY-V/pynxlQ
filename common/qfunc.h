@@ -914,7 +914,8 @@ static inline int32_t q_unicode_hex_decode(char* pszSrc, int32_t iSrcLen, char* 
 							c|=(pszSrc[i+k]-'A')+10;
 						}
 					}
-					pszDest[j++]=(char)(c&0xff);
+
+					if(c) pszDest[j++]=(char)(c&0xff);
 
 					i+=5;
 				} else {
