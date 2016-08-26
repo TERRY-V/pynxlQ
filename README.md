@@ -1,2 +1,4 @@
 # kalavaQ
-A simple c/c++ common library!
+
+This is a simple c/c++ common library!
+
