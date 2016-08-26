@@ -1,4 +1,4 @@
-# pynxlQ
+pynxlQ
 ========
 
 A Simple C/C++ library!
