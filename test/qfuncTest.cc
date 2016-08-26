@@ -202,14 +202,16 @@ int main(int argc, char** argv)
 	//std::cout<<murmurHash64A((void*)"hello", 5, 0xadc83b19ULL)<<std::endl;
 
 	//char src1[]="\\u8303\\u51b0\\u51b0";
-#if 0
-	char src1[]="Angelababy";
+#if 1
+	char src1[]="http\\u003A\\u002F\\u002Fs2.mogucdn.com\\u002Fp2\\u002F160804\\u002F157025422_6ha9g550e95e47695f9hkch1039ek_790x636.jpg";
 	int len1=strlen(src1);
 	char dest1[1024]={0};
 
-	int dest1_len=q_unicode_hex_decode(src1, len1, dest1, 12);
-	cout<<dest1_len<<'\t'<<dest1<<endl;
+	int dest1_len=q_unicode_hex_decode(src1, len1, dest1, sizeof(dest1));
+	printf("len = (%d), %.*s\n", dest1_len, dest1_len, dest1);
+	q_hex_dump("dest", (void*)dest1, dest1_len);
 
+	/*
 	char buf[1024]={0};
 	int len=QTextCodec::unicode2utf8(dest1, dest1_len, buf, sizeof(buf));
 	cout<<buf<<len<<endl;
@@ -221,11 +223,14 @@ int main(int argc, char** argv)
 	cout<<q_repair_url("/11111.html")<<endl;
 	cout<<q_repair_url("http://www.host.com/11111.html")<<endl;
 	cout<<q_repair_url("http:\\/\\/slide.sky.news.sina.com.cn\\/slide_33_70549_38507.html")<<endl;
+	*/
 #endif
 
+	/*
 	char str[]="abcbae";
 	//q_full_permutation(str, 1, 4);
 	cout<<q_is_palindrome(str, 6)<<endl;
+	*/
 
 	return 0;
 }

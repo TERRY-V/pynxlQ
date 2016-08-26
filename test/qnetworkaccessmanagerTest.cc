@@ -109,35 +109,14 @@ void testURL()
 	char content[2<<20]={0};
 	int32_t ret=0;
 
-	char url[1<<10] = {0};
-	char post_data[]="{"
-		"\"id\":\"12ns234dtest\","
-		"\"adunit\":"
-		"{"
-		"	\"id\": \"py_test\", "
-		"	\"adunit_type\":0, "
-		"	\"height\":250, "
-		"	\"width\":300, "
-		"	\"min_cpm\":500, "
-		"	\"currency\":\"CNY\" "
-		"},"
-		"\"imginfo\": "
-		"{"
-		"	\"imgid\": \"dc398053b52c8600d688388eb2b31484\", "
-		"	\"scene\": \"服装店\", "
-		"	\"object\":  \"上衣\" "
-		"} "
-	"}";
-
-		networkManager->setUserAgent("Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36");
-		networkManager->setRedirectionEnabled();
-
-		ret=networkManager->doHttpPost("http://www.adkalava.cn/taobao", post_data, 10000, content, sizeof(content));
-		if(ret<0) {
-			printf("%s ==> (%d)\n", url, ret);
-		} else {
-			Q_INFO("RES = %.*s", ret, content);
-		}
+	while(1) {
+	ret=networkManager->doHttpGet("https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superman/css/super_min_9e70e43e.css", 10000, content, sizeof(content));
+	if(ret<0) {
+		printf(" ==> (%d)\n", ret);
+	} else {
+		Q_INFO("RES = %.*s", ret, content);
+	}
+	}
 }
 
 void testWeibo()
