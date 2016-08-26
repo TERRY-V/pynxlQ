@@ -1,13 +1,15 @@
 pynxlQ
 ========
 
-A Simple C/C++ library!
+PynxlQ is a simple, small, efficient C/C++ library that can be 
+easily integrating into other programs.
+
+The master is hosted on github:
+https://github.com/TERRY-V/pynxlQ.git
+
+Features
+--------
 
 - Write script in C/C++
-- MySQL, MongoDB, Redis, Memcached as database backend
-
-Installation
-------------
-
-git clone https://github.com/TERRY-V/pynxlQ.git
+- Easy to use and simple interface
 
