@@ -1,2 +1,0 @@
-/root/TERRY-V/QC++/cmake/build/src/CMakeFiles/hello.dir
-/root/TERRY-V/QC++/cmake/build/libhello/CMakeFiles/libhello.dir
