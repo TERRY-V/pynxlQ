@@ -1,8 +1,0 @@
-https://github.com/mongodb/mongo-c-driver
-
-$ git clone https://github.com/mongodb/mongo-c-driver.git
-$ cd mongo-c-driver
-$ git checkout x.y.z  # To build a particular release
-$ ./autogen.sh --with-libbson=bundled
-$ make
-$ sudo make install
