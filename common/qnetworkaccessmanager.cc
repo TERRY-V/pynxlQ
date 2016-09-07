@@ -2,6 +2,8 @@
 
 Q_BEGIN_NAMESPACE
 
+bool QNetworkAccessManager::flag_ = false;
+
 QNetworkAccessManager::QNetworkAccessManager() :
 	curl_handle_(0),
 	ptr_page_(0),
@@ -14,31 +16,23 @@ QNetworkAccessManager::QNetworkAccessManager() :
 QNetworkAccessManager::~QNetworkAccessManager()
 {
 	::curl_easy_cleanup(curl_handle_);
-}
-
-int32_t QNetworkAccessManager::global_init()
-{
-	::curl_global_init(CURL_GLOBAL_ALL);
-	return NET_OK;
-}
-
-int32_t QNetworkAccessManager::global_cleanup()
-{
-	::curl_global_cleanup();
-	return NET_OK;
+	if(this->flag_)
+		::curl_global_cleanup();
 }
 
 int32_t QNetworkAccessManager::init()
 {
+	if(!this->flag_) {
+		::curl_global_init(CURL_GLOBAL_ALL);
+		this->flag_=true;
+	}
+
 	curl_handle_=::curl_easy_init();
 	if(NULL==curl_handle_) {
 		Q_INFO("QNetworkAccessManager:: curl_easy_init failed!");
 		return NET_ERR;
 	}
 
-	ptr_page_=0;
-	max_page_size_=0;
-	page_len_=0;
 	return NET_OK;
 }
 

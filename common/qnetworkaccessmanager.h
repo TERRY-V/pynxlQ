@@ -50,12 +50,6 @@ class QNetworkAccessManager {
 
 		virtual ~QNetworkAccessManager();
 
-		/* global init */
-		static int32_t global_init();
-
-		/* global cleanup */
-		static int32_t global_cleanup();
-
 		/* init */
 		int32_t init();
 
@@ -111,6 +105,8 @@ class QNetworkAccessManager {
 
 		QNetworkAccessManager* network_manager_;
 		CURL*		curl_handle_;
+		static bool     flag_;
+
 		char*		ptr_page_;
 		int32_t		max_page_size_;
 		int32_t		page_len_;
