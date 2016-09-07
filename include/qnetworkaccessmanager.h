@@ -105,7 +105,7 @@ class QNetworkAccessManager {
 
 		QNetworkAccessManager* network_manager_;
 		CURL*		curl_handle_;
-		static bool     flag_;
+		static int32_t  flag_;
 
 		char*		ptr_page_;
 		int32_t		max_page_size_;

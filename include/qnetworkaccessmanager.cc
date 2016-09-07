@@ -2,7 +2,7 @@
 
 Q_BEGIN_NAMESPACE
 
-bool QNetworkAccessManager::flag_ = false;
+int32_t QNetworkAccessManager::flag_ = 0;
 
 QNetworkAccessManager::QNetworkAccessManager() :
 	curl_handle_(0),
@@ -16,7 +16,7 @@ QNetworkAccessManager::QNetworkAccessManager() :
 QNetworkAccessManager::~QNetworkAccessManager()
 {
 	::curl_easy_cleanup(curl_handle_);
-	if(this->flag_)
+	if(!--this->flag_)
 		::curl_global_cleanup();
 }
 
@@ -24,7 +24,7 @@ int32_t QNetworkAccessManager::init()
 {
 	if(!this->flag_) {
 		::curl_global_init(CURL_GLOBAL_ALL);
-		this->flag_=true;
+		++this->flag_;
 	}
 
 	curl_handle_=::curl_easy_init();
