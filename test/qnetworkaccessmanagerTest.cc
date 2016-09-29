@@ -1,8 +1,8 @@
 #include <iostream>
-#include "../common/qnetworkaccessmanager.h"
-#include "../common/qtextcodec.h"
-#include "../common/qfile.h"
-#include "../common/qfunc.h"
+#include "../include/qnetworkaccessmanager.h"
+#include "../include/qtextcodec.h"
+#include "../include/qfile.h"
+#include "../include/qfunc.h"
 
 using namespace std;
 using namespace niu;
@@ -109,13 +109,12 @@ void testURL()
 	char content[2<<20]={0};
 	int32_t ret=0;
 
-	while(1) {
-	ret=networkManager->doHttpGet("https://ss0.bdstatic.com/5aV1bjqh_Q23odCf/static/superman/css/super_min_9e70e43e.css", 10000, content, sizeof(content));
+	networkManager->setUserAgent("Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36 MicroMessenger/6.5.2.501 NetType/WIFI WindowsWechat");
+	ret=networkManager->doHttpGet("https://mp.weixin.qq.com/mp/getmasssendmsg?__biz=MzAxMDYwMTMzOQ==&uin=MTYyNjEyNTU2MA%3D%3D&key=7b81aac53bd2393dccb0092ebc490f57f4e460d1ecc86682bd8cdb3f4ec89c28c94971e7b7e73c75894c65a532f4e6486210bd3d8e4087ca&devicetype=Windows+7&version=62010025&lang=zh_CN&ascene=14&pass_ticket=VM8iOun8evce%2Fu3%2B152YPgL4Cj0%2BjxQ6%2FX8XOK8pN6eDS1ogKDOO8ki%2BfKM0JR8f&wx_header=1", 10000, content, sizeof(content));
 	if(ret<0) {
 		printf(" ==> (%d)\n", ret);
 	} else {
 		Q_INFO("RES = %.*s", ret, content);
-	}
 	}
 }
 

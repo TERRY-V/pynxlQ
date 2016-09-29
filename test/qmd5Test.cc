@@ -19,7 +19,8 @@ int main()
 	//cout<<val1<<endl;
 
 #if 1
-	uint64_t val2=qmd5.MD5Bits64((unsigned char*)"Hello world!", 12);
+	//uint64_t val2=qmd5.MD5Bits64((unsigned char*)"Hello world!", 12);
+	uint64_t val2=2655436793;
 	printf("%lu\n", val2);
 	printf("%llx\n", val2);
 #endif
